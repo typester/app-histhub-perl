@@ -5,9 +5,6 @@ use parent 'Catalyst::Controller';
 
 __PACKAGE__->mk_accessors(qw/result error/);
 
-use Data::UUID;
-use Digest::SHA1 qw/sha1_hex/;
-
 =head1 NAME
 
 App::HistHub::Web::Controller::API - Catalyst Controller
@@ -27,6 +24,24 @@ sub init :Local :Args(0) {
 
     my $peer = $c->model('DB::Peer')->create({});
     $self->result({ uid => $peer->uid });
+}
+
+=head2 poll
+
+=cut
+
+sub poll :Local :Args(0) {
+    my ($self, $c) = @_;
+
+    my $uid  = $c->req->param('uid') or return $self->error('require uid');
+    my $peer = $c->model('DB::Peer')->find({ uid => $uid }) or return $self->error('no such uid');
+
+    if (my $data = $c->req->param('data')) {
+        my @peers = $c->model('DB::Peer')->search({ uid => { '!=', $uid } });
+        $_->push_queue($data) for @peers;
+    }
+
+    $self->result( $peer->pop_queue );
 }
 
 =head2 end
