@@ -1,24 +1,4 @@
 package App::HistHub::Schema::Peer;
-
-use strict;
-use warnings;
-
-use base 'DBIx::Class';
-
-__PACKAGE__->load_components("ResultSetManager", "UTF8Columns", "Core");
-__PACKAGE__->table("peer");
-__PACKAGE__->add_columns(
-  "id",
-  { data_type => "INTEGER", is_nullable => 0, size => undef },
-  "uid",
-  { data_type => "TEXT", is_nullable => 0, size => undef },
-  "access_time",
-  { data_type => "INTEGER", is_nullable => 0, size => undef },
-);
-__PACKAGE__->set_primary_key("id");
-
-
-package App::HistHub::Schema::Peer;
 use strict;
 use warnings;
 

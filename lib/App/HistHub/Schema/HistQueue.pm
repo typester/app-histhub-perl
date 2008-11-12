@@ -10,17 +10,35 @@ __PACKAGE__->table("hist_queue");
 __PACKAGE__->add_columns(
   "id",
   { data_type => "INTEGER", is_nullable => 0, size => undef },
+  "peer",
+  { data_type => "INTEGER", is_nullable => 0, size => undef },
+  "data",
+  { data_type => "TEXT", is_nullable => 0, size => undef },
   "timestamp",
   { data_type => "INTEGER", is_nullable => 0, size => undef },
-  "body",
-  { data_type => "TEXT", is_nullable => 0, size => undef },
 );
 __PACKAGE__->set_primary_key("id");
 
 
-# Created by DBIx::Class::Schema::Loader v0.04005 @ 2008-11-11 18:43:59
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:5ZAXcjnMpnNO9E6JWdGVyA
+package App::HistHub::Schema::HistQueue;
+use strict;
+use warnings;
 
+use DateTime;
 
-# You can replace this text with custom content, and it will be preserved on regeneration
+__PACKAGE__->belongs_to( peer => 'App::HistHub::Schema::Peer' );
+
+__PACKAGE__->inflate_column(
+    timestamp => {
+        inflate => sub { DateTime->from_epoch( epoch => shift ) },
+        deflate => sub { shift->epoch },
+    },
+);
+
+sub insert {
+    my $self = shift;
+    $self->timestamp( DateTime->now ) unless $self->timestamp;
+    $self->next::method(@_);
+}
+
 1;
