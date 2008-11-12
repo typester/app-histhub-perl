@@ -1,11 +1,13 @@
 CREATE TABLE peer (
-       uid TEXT NOT NULL PRIMARY KEY,
-       created INTEGER NOT NULL,
-       cursor INTEGER
+       id INTEGER NOT NULL PRIMARY KEY,
+       uid TEXT NOT NULL,
+       access_time INTEGER NOT NULL
 );
+CREATE UNIQUE INDEX uid ON peer (uid);
 
 CREATE TABLE hist_queue (
        id INTEGER NOT NULL PRIMARY KEY,
-       timestamp INTEGER NOT NULL,
-       body TEXT NOT NULL
+       peer INTEGER NOT NULL,
+       data TEXT NOT NULL,
+       timestamp INTEGER NOT NULL
 );
