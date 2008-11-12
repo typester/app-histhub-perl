@@ -52,9 +52,6 @@ sub end :Private {
         };
     }
 
-    use YAML::Syck;
-    warn Dump $c->stash;
-
     $c->forward( $c->view('JSON') );
 }
 
