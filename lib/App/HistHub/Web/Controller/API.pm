@@ -36,7 +36,7 @@ sub poll :Local :Args(0) {
     my $uid  = $c->req->param('uid') or return $self->error('require uid');
     my $peer = $c->model('DB::Peer')->find({ uid => $uid }) or return $self->error('no such uid');
 
-    if (my $data = $c->req->param('data')) {
+    if ($c->req->method eq 'POST' and my $data = $c->req->param('data')) {
         my @peers = $c->model('DB::Peer')->search({ uid => { '!=', $uid } });
         $_->push_queue($data) for @peers;
     }
@@ -54,13 +54,16 @@ sub end :Private {
     if (@{ $c->error }) {
         (my $last_error = $c->error->[-1]) =~ s/ on .*?$//;
 
+        use YAML;
+        warn Dump $last_error;
+
         $c->res->status(500);
         $c->stash->{json} = {
             error => $last_error,
         };
         $c->error(0);
     }
-    elsif ($self->result or $self->error) {
+    else {
         $c->stash->{json} = {
             result => $self->result || '',
             error  => $self->error || '',

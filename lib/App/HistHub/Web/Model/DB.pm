@@ -7,7 +7,7 @@ __PACKAGE__->config(
     connect_info => [
         'dbi:SQLite:dbname=:memory:',
         {
-            on_connect_do => [ _create_table() ]
+            on_connect_do => [ _create_table()]
         },
     ],
 );

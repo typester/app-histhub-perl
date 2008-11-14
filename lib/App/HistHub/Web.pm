@@ -10,7 +10,9 @@ use Catalyst qw/
     /;
 
 __PACKAGE__->config(
-    
+    'Plugin::ConfigLoader' => {
+        file => __PACKAGE__->path_to('config')->stringify,
+    },
 );
 
 __PACKAGE__->setup;

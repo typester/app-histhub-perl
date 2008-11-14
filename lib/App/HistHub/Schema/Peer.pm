@@ -49,7 +49,7 @@ sub push_queue {
 
 sub pop_queue {
     my $self = shift;
-    join "\n", map { $_->data } $self->queue->all;
+    join "\n", map { $_->data } $self->queue;
 }
 
 1;
