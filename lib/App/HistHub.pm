@@ -174,17 +174,13 @@ Update history file
 sub append_history {
     my ($self, $session, $data) = @_;
 
-    warn 'polled';
-
     my $json = $self->json_driver->decode($data);
     if ($json->{error}) {
         warn 'api poll error: '. $json->{error};
     }
     elsif ($json->{result}) {
-        warn 'append_history';
         $self->{tailer} = undef;
 
-        warn $json->{result};
         open my $fh, '>>', $self->hist_file;
 
         flock($fh, LOCK_EX);
@@ -280,14 +276,12 @@ sub poe_set_poll {
 sub poe_poll {
     my ($self, $kernel, $session) = @_[OBJECT, KERNEL, SESSION];
 
-    warn 'poll';
     $kernel->yield('set_poll');
 
     my $d = $self->ua->request(
         POST $self->uri_for('/api/poll'),
         [ uid => $self->api_uid, data => join '', @{ $self->update_queue } ]
     );
-    warn join '', @{ $self->update_queue };
     $self->update_queue([]);
 
     $d->addCallback(sub { $self->append_history($session, shift->content) });
