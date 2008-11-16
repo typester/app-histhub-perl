@@ -7,11 +7,11 @@ __PACKAGE__->mk_accessors(qw/result error/);
 
 =head1 NAME
 
-App::HistHub::Web::Controller::API - Catalyst Controller
+App::HistHub::Web::Controller::API - API Controller for App::HistHub::Web
 
 =head1 DESCRIPTION
 
-Catalyst Controller.
+L<App::HistHub>.
 
 =head1 METHODS
 

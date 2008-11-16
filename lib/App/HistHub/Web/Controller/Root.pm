@@ -11,7 +11,7 @@ App::HistHub::Web::Controller::Root - Root Controller for App::HistHub::Web
 
 =head1 DESCRIPTION
 
-[enter your description here]
+L<App::HistHub>.
 
 =head1 METHODS
 

@@ -21,19 +21,15 @@ __PACKAGE__->setup;
 
 =head1 NAME
 
-App::HistHub::Web - Catalyst based application
+App::HistHub::Web - Web api for App::HistHub
 
 =head1 SYNOPSIS
 
     script/app_histhub_web_server.pl
 
-=head1 DESCRIPTION
-
-[enter your description here]
-
 =head1 SEE ALSO
 
-L<App::HistHub::Web::Controller::Root>, L<Catalyst>
+L<App::HistHub>.
 
 =head1 AUTHOR
 

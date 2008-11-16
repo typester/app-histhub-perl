@@ -1,6 +1,8 @@
 package App::HistHub;
 use Moose;
 
+our $VERSION = '0.01';
+
 use POE qw/
     Wheel::FollowTail
     Component::Client::HTTPDeferred
@@ -9,8 +11,6 @@ use POE qw/
 use JSON::XS ();
 use HTTP::Request::Common;
 use Fcntl ':flock';
-
-our $VERSION = '0.01';
 
 has hist_file => (
     is       => 'rw',
@@ -64,6 +64,51 @@ has api_uid => (
     isa => 'Str',
 );
 
+=head1 NAME
+
+App::HistHub - Sync shell history between multiple PC.
+
+=head1 SYNOPSIS
+
+  use App::HistHub;
+  blah blah blah
+
+=head1 DESCRIPTION
+
+Stub documentation for this module was created by ExtUtils::ModuleMaker.
+It looks like the author of the extension was negligent enough
+to leave the stub unedited.
+
+Blah blah blah.
+
+=head1 METHODS
+
+=head2 new
+
+    my $hh = App::HistHub->new( %options );
+
+Create HistHub object.
+
+Available obtions are:
+
+=over 4
+
+=item hist_file
+
+History file path to watch update
+
+=item api_endpoint
+
+Update API URL.
+
+=back
+
+=head2 spawn
+
+Create POE session and return session object.
+
+=cut
+
 sub spawn {
     my $self = shift;
 
@@ -76,81 +121,25 @@ sub spawn {
     );
 }
 
+=head2 run
+
+Spawn and start POE::Kernel
+
+=cut
+
 sub run {
     my $self = shift;
     $self->spawn;
     POE::Kernel->run;
 }
 
-sub poe__start {
-    my ($self, $kernel, $session) = @_[OBJECT, KERNEL, SESSION];
+=head2 uri_for
 
-    my $d = $self->ua->request( GET $self->api_endpoint . '/api/init' );
-    $d->addCallback(sub {
-        my $res = shift;
-        my $json = $self->json_driver->decode($res->content);
+    $hh->uri_for( $path )
 
-        if ($json->{error}) {
-            die 'api response error: ' . $json->{error};
-        }
-        else {
-            $self->api_uid( $json->{result}{uid} );
-            $kernel->post( $session->ID, 'init' );
-        }
-    });
-    $d->addErrback(sub {
-        my $res = shift;
-        die 'api response error: ', $res->status_line;
-    });
-}
+Build api url
 
-sub poe_init {
-    my ($self, $kernel) = @_[OBJECT, KERNEL];
-
-    my $tailor = POE::Wheel::FollowTail->new(
-        Filename   => $self->hist_file,
-        InputEvent => 'hist_line',
-        ResetEvent => 'hist_rollover',
-    );
-    $self->tailor( $tailor );
-
-    $kernel->yield('set_poll');
-}
-
-sub poe_hist_line {
-    my ($self, $kernel, $line) = @_[OBJECT, KERNEL, ARG0];
-
-    push @{ $self->update_queue }, $line;
-    $kernel->yield('set_poll');
-}
-
-sub poe_hist_rollover {
-    my ($self, $kernel) = @_[OBJECT, KERNEL];
-    
-}
-
-sub poe_set_poll {
-    my ($self, $kernel) = @_[OBJECT, KERNEL];
-    $kernel->delay( poll => $self->poll_delay );
-}
-
-sub poe_poll {
-    my ($self, $kernel, $session) = @_[OBJECT, KERNEL, SESSION];
-
-    warn 'poll';
-    $kernel->yield('set_poll');
-
-    my $d = $self->ua->request(
-        POST $self->uri_for('/api/poll'),
-        [ uid => $self->api_uid, data => join '', @{ $self->update_queue } ]
-    );
-    warn join '', @{ $self->update_queue };
-    $self->update_queue([]);
-
-    $d->addCallback(sub { $self->append_history($session, shift->content) });
-    $d->addErrback(sub { warn 'api poll error: ' . shift->status_line });
-    $d->addBoth(sub { $kernel->post($session->ID => 'set_poll') });
-}
+=cut
 
 sub uri_for {
     my ($self, $path) = @_;
@@ -158,6 +147,14 @@ sub uri_for {
     (my $url = $self->api_endpoint) =~ s!/+$!!;
     $url . $path;
 }
+
+=head2 append_history
+
+    $hh->append_history( $session, $api_response );
+
+Update history file
+
+=cut
 
 sub append_history {
     my ($self, $session, $data) = @_;
@@ -187,22 +184,101 @@ sub append_history {
     }
 }
 
-=head1 NAME
+=head1 POE METHODS
 
-App::HistHub - Module abstract (<= 44 characters) goes here
+=head2 poe__start
 
-=head1 SYNOPSIS
+=cut
 
-  use App::HistHub;
-  blah blah blah
+sub poe__start {
+    my ($self, $kernel, $session) = @_[OBJECT, KERNEL, SESSION];
 
-=head1 DESCRIPTION
+    my $d = $self->ua->request( GET $self->api_endpoint . '/api/init' );
+    $d->addCallback(sub {
+        my $res = shift;
+        my $json = $self->json_driver->decode($res->content);
 
-Stub documentation for this module was created by ExtUtils::ModuleMaker.
-It looks like the author of the extension was negligent enough
-to leave the stub unedited.
+        if ($json->{error}) {
+            die 'api response error: ' . $json->{error};
+        }
+        else {
+            $self->api_uid( $json->{result}{uid} );
+            $kernel->post( $session->ID, 'init' );
+        }
+    });
+    $d->addErrback(sub {
+        my $res = shift;
+        die 'api response error: ', $res->status_line;
+    });
+}
 
-Blah blah blah.
+=head2 poe_init
+
+=cut
+
+sub poe_init {
+    my ($self, $kernel) = @_[OBJECT, KERNEL];
+
+    my $tailor = POE::Wheel::FollowTail->new(
+        Filename   => $self->hist_file,
+        InputEvent => 'hist_line',
+        ResetEvent => 'hist_rollover',
+    );
+    $self->tailor( $tailor );
+
+    $kernel->yield('set_poll');
+}
+
+=head2 poe_hist_line
+
+=cut
+
+sub poe_hist_line {
+    my ($self, $kernel, $line) = @_[OBJECT, KERNEL, ARG0];
+
+    push @{ $self->update_queue }, $line;
+    $kernel->yield('set_poll');
+}
+
+=head2 poe_hist_rollover
+
+=cut
+
+sub poe_hist_rollover {
+    my ($self, $kernel) = @_[OBJECT, KERNEL];
+    
+}
+
+=head2 poe_set_poll
+
+=cut
+
+sub poe_set_poll {
+    my ($self, $kernel) = @_[OBJECT, KERNEL];
+    $kernel->delay( poll => $self->poll_delay );
+}
+
+=head2 poe_poll
+
+=cut
+
+sub poe_poll {
+    my ($self, $kernel, $session) = @_[OBJECT, KERNEL, SESSION];
+
+    warn 'poll';
+    $kernel->yield('set_poll');
+
+    my $d = $self->ua->request(
+        POST $self->uri_for('/api/poll'),
+        [ uid => $self->api_uid, data => join '', @{ $self->update_queue } ]
+    );
+    warn join '', @{ $self->update_queue };
+    $self->update_queue([]);
+
+    $d->addCallback(sub { $self->append_history($session, shift->content) });
+    $d->addErrback(sub { warn 'api poll error: ' . shift->status_line });
+    $d->addBoth(sub { $kernel->post($session->ID => 'set_poll') });
+}
 
 =head1 AUTHOR
 

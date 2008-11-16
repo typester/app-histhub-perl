@@ -37,6 +37,7 @@ _CREATE_
 =head1 NAME
 
 App::HistHub::Web::Model::DB - Catalyst DBIC Schema Model
+
 =head1 SYNOPSIS
 
 See L<App::HistHub::Web>
