@@ -10,6 +10,8 @@ use Catalyst qw/
     /;
 
 __PACKAGE__->config(
+    default_view => 'TD',
+
     'Plugin::ConfigLoader' => {
         file => __PACKAGE__->path_to('config')->stringify,
     },
