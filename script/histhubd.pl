@@ -18,8 +18,8 @@ pod2usage(1) unless $option{histfile} and $option{server};
 
 
 my $hh = App::HistHub->new(
-    hist_file    => '/Users/typester/.zhistory',
-    api_endpoint => 'http://localhost:3000/',
+    hist_file    => $option{histfile},
+    api_endpoint => $option{server},
 );
 $hh->run;
 
