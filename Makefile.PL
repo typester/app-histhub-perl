@@ -17,4 +17,8 @@ test_requires 'Test::More';
 
 use_test_base;
 auto_include;
+
+install_script('script/histhub_server.pl');
+install_script('script/histhubd.pl');
+
 WriteAll;
