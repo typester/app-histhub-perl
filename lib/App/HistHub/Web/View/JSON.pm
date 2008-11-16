@@ -12,7 +12,7 @@ __PACKAGE__->config(
 
 sub new {
     my $self = shift->SUPER::new(@_);
-    $self->{encoder} = JSON::XS->new;
+    $self->{encoder} = JSON::XS->new->latin1;
     $self;
 }
 

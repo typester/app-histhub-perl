@@ -5,15 +5,17 @@ use base 'Catalyst::Model::DBIC::Schema';
 __PACKAGE__->config(
     schema_class => 'App::HistHub::Schema',
     connect_info => [
-        'dbi:SQLite:dbname=:memory:',
+        'dbi:SQLite:',
         {
-            on_connect_do => [ _create_table()]
+            on_connect_do => [
+                _create_table(),
+            ]
         },
     ],
 );
 
 sub _create_table {
-    return <<_CREATE_;
+    my $sql = <<_CREATE_;
 CREATE TABLE peer (
        id INTEGER NOT NULL PRIMARY KEY,
        uid TEXT NOT NULL,
@@ -28,6 +30,8 @@ CREATE TABLE hist_queue (
        timestamp INTEGER NOT NULL
 );
 _CREATE_
+
+    map { "$_;" } grep { $_ =~ /\S/ } split /;/, $sql;
 }
 
 =head1 NAME

@@ -29,7 +29,9 @@ sub push_queue {
 
 sub pop_queue {
     my $self = shift;
-    join "\n", map { $_->data } $self->queue;
+    my $data = join '', map { $_->data . "\n" } $self->queue;
+    $self->queue->delete_all;
+    $data;
 }
 
 1;

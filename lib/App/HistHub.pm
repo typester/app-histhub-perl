@@ -1,5 +1,4 @@
 package App::HistHub;
-use utf8;
 use Moose;
 
 use POE qw/
@@ -38,7 +37,7 @@ has json_driver => (
     isa     => 'JSON::XS',
     lazy    => 1,
     default => sub {
-        JSON::XS->new;
+        JSON::XS->new->latin1;
     },
 );
 
@@ -145,9 +144,10 @@ sub poe_poll {
         POST $self->uri_for('/api/poll'),
         [ uid => $self->api_uid, data => join '', @{ $self->update_queue } ]
     );
+    warn join '', @{ $self->update_queue };
     $self->update_queue([]);
 
-    $d->addCallback(sub { $self->append_history(shift->content) });
+    $d->addCallback(sub { $self->append_history($session, shift->content) });
     $d->addErrback(sub { warn 'api poll error: ' . shift->status_line });
     $d->addBoth(sub { $kernel->post($session->ID => 'set_poll') });
 }
@@ -160,7 +160,7 @@ sub uri_for {
 }
 
 sub append_history {
-    my ($self, $data) = @_;
+    my ($self, $session, $data) = @_;
 
     warn 'polled';
 
@@ -170,6 +170,8 @@ sub append_history {
     }
     elsif ($json->{result}) {
         warn 'append_history';
+        $self->{tailer} = undef;
+
         warn $json->{result};
         open my $fh, '>>', $self->hist_file;
 
@@ -180,6 +182,8 @@ sub append_history {
 
         flock($fh, LOCK_UN);
         close $fh;
+
+        $poe_kernel->post( $session->ID => 'init' );
     }
 }
 
