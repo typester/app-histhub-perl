@@ -21,4 +21,6 @@ auto_include;
 install_script('script/histhub_server.pl');
 install_script('script/histhubd.pl');
 
+tests 't/*.t t/*/*.t';
+
 WriteAll;
