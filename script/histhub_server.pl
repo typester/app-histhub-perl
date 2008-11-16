@@ -17,9 +17,9 @@ my $debug             = 0;
 my $fork              = 0;
 my $help              = 0;
 my $host              = undef;
-my $port              = $ENV{APP_HISTHUB_WEB_PORT} || $ENV{CATALYST_PORT} || 3000;
+my $port              = $ENV{HISTHUB_PORT} || $ENV{CATALYST_PORT} || 3000;
 my $keepalive         = 0;
-my $restart           = $ENV{APP_HISTHUB_WEB_RELOAD} || $ENV{CATALYST_RELOAD} || 0;
+my $restart           = $ENV{HISTHUB_RELOAD} || $ENV{CATALYST_RELOAD} || 0;
 my $restart_delay     = 1;
 my $restart_regex     = '(?:/|^)(?!\.#).+(?:\.yml$|\.yaml$|\.conf|\.pm)$';
 my $restart_directory = undef;
@@ -69,11 +69,11 @@ App::HistHub::Web->run( $port, $host, {
 
 =head1 NAME
 
-app_histhub_web_server.pl - Catalyst Testserver
+histhub_server.pl - Catalyst Testserver
 
 =head1 SYNOPSIS
 
-app_histhub_web_server.pl [options]
+histhub_server.pl [options]
 
  Options:
    -d -debug          force debug mode

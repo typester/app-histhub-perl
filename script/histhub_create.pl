@@ -26,11 +26,11 @@ pod2usage(1) unless $helper->mk_component( 'App::HistHub::Web', @ARGV );
 
 =head1 NAME
 
-app_histhub_web_create.pl - Create a new Catalyst Component
+histhub_create.pl - Create a new Catalyst Component
 
 =head1 SYNOPSIS
 
-app_histhub_web_create.pl [options] model|view|controller name [helper] [options]
+histhub_create.pl [options] model|view|controller name [helper] [options]
 
  Options:
    -force        don't create a .new file where a file to be created exists
@@ -38,16 +38,16 @@ app_histhub_web_create.pl [options] model|view|controller name [helper] [options
    -help         display this help and exits
 
  Examples:
-   app_histhub_web_create.pl controller My::Controller
-   app_histhub_web_create.pl controller My::Controller BindLex
-   app_histhub_web_create.pl -mechanize controller My::Controller
-   app_histhub_web_create.pl view My::View
-   app_histhub_web_create.pl view MyView TT
-   app_histhub_web_create.pl view TT TT
-   app_histhub_web_create.pl model My::Model
-   app_histhub_web_create.pl model SomeDB DBIC::Schema MyApp::Schema create=dynamic\
+   histhub_create.pl controller My::Controller
+   histhub_create.pl controller My::Controller BindLex
+   histhub_create.pl -mechanize controller My::Controller
+   histhub_create.pl view My::View
+   histhub_create.pl view MyView TT
+   histhub_create.pl view TT TT
+   histhub_create.pl model My::Model
+   histhub_create.pl model SomeDB DBIC::Schema MyApp::Schema create=dynamic\
    dbi:SQLite:/tmp/my.db
-   app_histhub_web_create.pl model AnotherDB DBIC::Schema MyApp::Schema create=static\
+   histhub_create.pl model AnotherDB DBIC::Schema MyApp::Schema create=static\
    dbi:Pg:dbname=foo root 4321
 
  See also:

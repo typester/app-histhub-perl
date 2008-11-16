@@ -39,11 +39,11 @@ App::HistHub::Web->run(
 
 =head1 NAME
 
-app_histhub_web_fastcgi.pl - Catalyst FastCGI
+histhub_fastcgi.pl - Catalyst FastCGI
 
 =head1 SYNOPSIS
 
-app_histhub_web_fastcgi.pl [options]
+histhub_fastcgi.pl [options]
  
  Options:
    -? -help      display this help and exits

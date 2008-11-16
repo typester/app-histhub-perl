@@ -70,16 +70,31 @@ App::HistHub - Sync shell history between multiple PC.
 
 =head1 SYNOPSIS
 
-  use App::HistHub;
-  blah blah blah
+    use App::HistHub;
+    
+    my $hh = App::HistHub->new(
+        hist_file    => 'path to your history file',
+        api_endpoint => 'http://localhost:3000/',
+    );
+    $hh->run;
 
 =head1 DESCRIPTION
 
-Stub documentation for this module was created by ExtUtils::ModuleMaker.
-It looks like the author of the extension was negligent enough
-to leave the stub unedited.
+App::HistHub is an application that enables you to sync shell history between multiple computers.
 
-Blah blah blah.
+This application consists of two modules: client module (histhubd.pl) and server module (histhub_server.pl).
+
+You need one histhub server. To bootup the server, type following command:
+
+    histhub_server
+
+This server receive updating history data from one client, and broadcast to others.
+
+You also need one client daemon in each computer that you want to share history. To boot client, type following command:
+
+    histhubd --histfile=/path/to/your_history_file --server=http://your_server_address
+
+This client send updated history to server, and receive new history from other clients.
 
 =head1 METHODS
 
